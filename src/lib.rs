@@ -155,7 +155,7 @@ pub enum VideoControlType {
 
 #[link(name = "zbar")]
 extern {
-    pub fn zbar_version(major: *mut c_uint, minor: *mut c_uint) -> c_int;
+    pub fn zbar_version(major: *mut c_uint, minor: *mut c_uint, patch: *mut c_uint) -> c_int;
     pub fn zbar_set_verbosity(verbosity: c_int);
 }
 
@@ -268,6 +268,18 @@ impl ZBarImage {
     pub fn set_ref(&mut self, r: isize) {
         unsafe {
             zbar_image_ref(self.image, r as c_int);
+        }
+    }
+
+    pub fn zbar_version() -> String {
+        let mut major = 0;
+        let mut minor = 0;
+        let mut patch = 0;
+        let result = unsafe { zbar_version(&mut major, &mut minor, &mut patch) };
+        if result == 0 {
+            format!("{}.{}.{}", major, minor, patch)
+        } else {
+            String::new()
         }
     }
 
