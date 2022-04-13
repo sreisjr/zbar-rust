@@ -51,19 +51,6 @@ pub fn decode_string(encrypted: &Vec<u8>) -> String {
     s.to_string()
 }
 
-use std::fs;
-use std::fs::File;
-use std::io::Read;
-
-fn dump_file(filename: &String) -> Vec<u8> {
-    let mut f = File::open(&filename).expect("no file found");
-    let metadata = fs::metadata(&filename).expect("unable to read metadata");
-    let mut buffer = vec![0; metadata.len() as usize];
-    f.read(&mut buffer).expect("buffer overflow");
-
-    buffer
-}
-
 pub fn decode() {
     const INPUT_PATH: &str = "testdata/sample3.png";
     let img = image::open(INPUT_PATH).unwrap();
@@ -98,13 +85,9 @@ fn set_config() {
 #[test]
 fn decode_qrcode() {
     let mut scanner = ZBarImageScanner::new();
-
     let url = "https://magiclen.org";
-
     let size = 512;
-
     let data = qrcode_generator::to_image_from_str(url, QrCodeEcc::Low, size).unwrap();
-
     let mut result = scanner.scan_y800(&data, size as u32, size as u32).unwrap();
 
     assert_eq!(1, result.len());
