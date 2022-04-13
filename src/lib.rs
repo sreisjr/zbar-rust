@@ -41,7 +41,7 @@ More examples are in the `examples` folder.
 #[macro_use]
 extern crate enum_ordinalize;
 
-use std::ptr;
+use std::{ffi::CStr, ptr};
 
 use libc::{c_char, c_int, c_uint, c_ulong, c_void};
 
@@ -49,46 +49,46 @@ use libc::{c_char, c_int, c_uint, c_ulong, c_void};
 #[repr(isize)]
 pub enum ZBarColor {
     ZBarSpace = 0,
-    ZBarBar   = 1,
+    ZBarBar = 1,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ordinalize)]
 #[repr(isize)]
 pub enum ZBarSymbolType {
-    ZBarNone       = 0,
-    ZBarPartial    = 1,
-    ZBarEAN2       = 2,
-    ZBarEAN5       = 5,
-    ZBarEAN8       = 8,
-    ZBarUPCE       = 9,
-    ZBarISBN10     = 10,
-    ZBarUPCA       = 12,
-    ZBarEAN13      = 13,
-    ZBarISBN13     = 14,
-    ZBarComposite  = 15,
-    ZBarI25        = 25,
-    ZBarDataBar    = 34,
+    ZBarNone = 0,
+    ZBarPartial = 1,
+    ZBarEAN2 = 2,
+    ZBarEAN5 = 5,
+    ZBarEAN8 = 8,
+    ZBarUPCE = 9,
+    ZBarISBN10 = 10,
+    ZBarUPCA = 12,
+    ZBarEAN13 = 13,
+    ZBarISBN13 = 14,
+    ZBarComposite = 15,
+    ZBarI25 = 25,
+    ZBarDataBar = 34,
     ZBarDataBarExp = 35,
-    ZBarCodeBar    = 38,
-    ZBarCode39     = 39,
-    ZBarPDF417     = 57,
-    ZBarQRCode     = 64,
-    ZBarCode93     = 93,
-    ZBarCode128    = 128,
-    ZBarSymbol     = 0x00ff,
-    ZBarAddOn2     = 0x0200,
-    ZBarAddOn5     = 0x0500,
-    ZBarAddOn      = 0x0700,
+    ZBarCodeBar = 38,
+    ZBarCode39 = 39,
+    ZBarPDF417 = 57,
+    ZBarQRCode = 64,
+    ZBarCode93 = 93,
+    ZBarCode128 = 128,
+    ZBarSymbol = 0x00ff,
+    ZBarAddOn2 = 0x0200,
+    ZBarAddOn5 = 0x0500,
+    ZBarAddOn = 0x0700,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ordinalize)]
 #[repr(isize)]
 pub enum ZBarOrientation {
     ZBarOrientUnknown = -1,
-    ZBarOrientUp      = 0,
-    ZBarOrientRight   = 1,
-    ZBarOrientDown    = 2,
-    ZBarOrientLeft    = 3,
+    ZBarOrientUp = 0,
+    ZBarOrientRight = 1,
+    ZBarOrientDown = 2,
+    ZBarOrientLeft = 3,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ordinalize)]
@@ -111,17 +111,46 @@ pub enum ZBarError {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ordinalize)]
 #[repr(isize)]
+
+/*
+typedef enum zbar_config_e {
+    ZBAR_CFG_ENABLE = 0,        /**< enable symbology/feature */
+    ZBAR_CFG_ADD_CHECK,         /**< enable check digit when optional */
+    ZBAR_CFG_EMIT_CHECK,        /**< return check digit when present */
+    ZBAR_CFG_ASCII,             /**< enable full ASCII character set */
+    ZBAR_CFG_BINARY,            /**< don't convert binary data to text */
+    ZBAR_CFG_NUM,               /**< number of boolean decoder configs */
+
+    ZBAR_CFG_MIN_LEN = 0x20,    /**< minimum data length for valid decode */
+    ZBAR_CFG_MAX_LEN,           /**< maximum data length for valid decode */
+
+    ZBAR_CFG_UNCERTAINTY = 0x40,/**< required video consistency frames */
+
+    ZBAR_CFG_POSITION = 0x80,   /**< enable scanner to collect position data */
+    ZBAR_CFG_TEST_INVERTED,     /**< if fails to decode, test inverted */
+
+    ZBAR_CFG_X_DENSITY = 0x100, /**< image scanner vertical scan density */
+    ZBAR_CFG_Y_DENSITY,         /**< image scanner horizontal scan density */
+} zbar_config_t;
+ */
 pub enum ZBarConfig {
-    ZBarCfgEnable    = 0,
-    ZBarCfgAddCheck  = 1,
+    ZBarCfgEnable = 0,
+    ZBarCfgAddCheck = 1,
     ZBarCfgEmitCheck = 2,
-    ZBarCfgASCII     = 3,
-    ZBarCfgNum       = 4,
-    ZBarCfgMinLen    = 0x20,
-    ZBarCfgMaxLen    = 0x21,
-    ZBarCfgPosition  = 0x80,
-    ZBarCfgXDensity  = 0x100,
-    ZBarCfgYDensity  = 0x101,
+    ZBarCfgASCII = 3,
+    ZbarCfgBinary = 4,
+    ZBarCfgNum = 5,
+
+    ZBarCfgMinLen = 0x20,
+    ZBarCfgMaxLen = 0x21,
+
+    ZBarCfgUncertainty = 0x40,
+
+    ZBarCfgPosition = 0x80,
+    ZBarCfgTestInverted = 0x81,
+
+    ZBarCfgXDensity = 0x100,
+    ZBarCfgYDensity = 0x101,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ordinalize)]
@@ -135,12 +164,12 @@ pub enum ZBarModifier {
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ordinalize)]
 #[repr(isize)]
 pub enum VideoControlType {
-    VideoCntlInteger   = 1,
-    VideoCntlMenu      = 2,
-    VideoCntlButton    = 3,
+    VideoCntlInteger = 1,
+    VideoCntlMenu = 2,
+    VideoCntlButton = 3,
     VideoCntlInteger64 = 4,
-    VideoCntlString    = 5,
-    VideoCntlBoolean   = 6,
+    VideoCntlString = 5,
+    VideoCntlBoolean = 6,
 }
 
 // TODO: ----- General Interface START-----
@@ -157,6 +186,34 @@ extern {
 
 #[link(name = "zbar")]
 extern {
+    //extern zbar_processor_t *zbar_processor_create(int threaded);
+    pub fn zbar_processor_create(t: c_int) -> *mut c_void;
+    // int zbar_processor_init(zbar_processor_t *processor,      const char *video_device,      int enable_display);
+    pub fn zbar_processor_init(
+        processor: *mut c_void,
+        video_device: *const c_char,
+        enable_display: c_int,
+    ) -> c_int;
+
+    fn zbar_processor_destroy(processor: *mut c_void);
+
+    pub fn zbar_processor_set_config(
+        processor: *mut c_void,
+        symbology: c_int,
+        config: c_int,
+        value: c_int,
+    ) -> c_int;
+
+    pub fn zbar_parse_config(
+        config_string: *const u8,
+        symbology: *mut c_int,
+        config: *mut c_int,
+        value: *mut c_int,
+    ) -> c_int;
+
+    //extern int zbar_process_image(zbar_processor_t *processor,    zbar_image_t *image);
+    fn zbar_process_image(processor: *mut c_void, image: *mut c_void) -> c_int;
+
     pub fn zbar_image_create() -> *mut c_void;
     pub fn zbar_image_destroy(image: *mut c_void);
     pub fn zbar_image_ref(image: *mut c_void, refs: c_int);
@@ -250,6 +307,80 @@ impl Default for ZBarImage {
     #[inline]
     fn default() -> Self {
         ZBarImage::new()
+    }
+}
+
+/*
+
+static inline int zbar_processor_parse_config (zbar_processor_t *processor,
+                                               const char *config_string)
+{
+    zbar_symbol_type_t sym;
+    zbar_config_t cfg;
+    int val;
+    return(zbar_parse_config(config_string, &sym, &cfg, &val) ||
+           zbar_processor_set_config(processor, sym, cfg, val));
+}
+ */
+
+pub struct ZbarProcessor {
+    processor: *mut c_void,
+}
+
+/*
+scanner.set_config(ZBarSymbolType::ZBarQRCode, ZBarConfig::ZBarCfgEnable, 1).unwrap();
+
+pub fn set_config(
+        &mut self,
+        symbology: ZBarSymbolType,
+        config: ZBarConfig,
+        value: isize,
+    ) -> Result<(), &'static str> {
+        let result = unsafe {
+            zbar_image_scanner_set_config(
+                self.scanner,
+                symbology.ordinal() as c_int,
+                config.ordinal() as c_int,
+                value as c_int,
+            )
+        };
+        if result == 0 {
+            Ok(())
+        } else {
+            Err("unsuccessfully")
+        }
+    }
+ */
+
+impl ZbarProcessor {
+    pub fn new() -> ZbarProcessor {
+        let processor = unsafe { zbar_processor_create(0) };
+
+        ZbarProcessor {
+            processor,
+        }
+    }
+
+    pub fn init(&self) {
+        unsafe {
+            let ret_code = zbar_processor_init(self.processor, ptr::null_mut(), 0);
+            if ret_code != 0 {
+                panic!("Failed to initialize processor!");
+            }
+
+            let mut sym = 0;
+            let mut cfg = 0;
+            let mut val = 0;
+
+            let ret = zbar_parse_config("binary\0".as_ptr(), &mut sym, &mut cfg, &mut val);
+            if ret == 0 {
+                zbar_processor_set_config(self.processor, sym, cfg, val);
+            }
+        };
+    }
+
+    pub fn process(&self, image: *mut c_void) -> i32 {
+        unsafe { zbar_process_image(self.processor, image) }
     }
 }
 
@@ -387,6 +518,8 @@ impl ZBarImageScanner {
         let data = data.as_ref();
 
         let mut image = ZBarImage::new();
+        let processor = ZbarProcessor::new();
+        processor.init();
 
         image.set_size(width, height);
         image.set_format(format);
@@ -400,23 +533,27 @@ impl ZBarImageScanner {
             );
         }
 
-        let n = unsafe { zbar_scan_image(self.scanner, image.image) };
+        //let n = unsafe { zbar_scan_image(self.scanner, image.image) };
+        let n = unsafe { zbar_process_image(processor.processor, image.image) };
+        println!("Debug: {}", n);
+        //let n = processor.process(image.image);
 
         if n < 0 {
             return Err("incorrect image");
         }
 
-        let mut result_array = Vec::with_capacity(n as usize);
+        //let mut result_array = Vec::with_capacity(n as usize);
+        let mut result_array = Vec::with_capacity(1);
 
         let mut symbol = unsafe { zbar_image_first_symbol(image.image) };
 
         while !symbol.is_null() {
             let symbol_type = unsafe { zbar_symbol_get_type(symbol) };
             let symbol_type = unsafe { ZBarSymbolType::from_ordinal_unsafe(symbol_type as isize) };
+            let data_length = unsafe { zbar_symbol_get_data_length(symbol) };
             let data = unsafe {
                 let data = zbar_symbol_get_data(symbol);
-                let data_length = zbar_symbol_get_data_length(symbol) as usize;
-                Vec::from_raw_parts(data as *mut u8, data_length, data_length)
+                Vec::from_raw_parts(data as *mut u8, data_length as usize, data_length as usize)
             };
 
             let result = ZBarImageScanResult {
@@ -450,3 +587,13 @@ impl Drop for ZBarImageScanner {
     }
 }
 // TODO: ----- Image Scanner Interface END-----
+
+impl Drop for ZbarProcessor {
+    fn drop(&mut self) {
+        if !self.processor.is_null() {
+            unsafe {
+                zbar_processor_destroy(self.processor);
+            }
+        }
+    }
+}
