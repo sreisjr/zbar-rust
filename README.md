@@ -1,7 +1,7 @@
 ZBar Rust
 ====================
 
-[![CI](https://github.com/magiclen/zbar-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/magiclen/zbar-rust/actions/workflows/ci.yml)
+[![CI](https://github.com/sreisjr/zbar-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/sreisjr/zbar-rust/actions/workflows/ci.yml)
 
 High-level and low-level ZBar binding for the Rust language.
 
